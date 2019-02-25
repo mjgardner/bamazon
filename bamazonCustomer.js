@@ -32,6 +32,21 @@ connection.connect(function(err) {
         }
       );
       console.log(output);
+      inquirer.prompt([
+        {
+          name: "item_id",
+          message: "Please enter a product ID you would like to buy:",
+          validate: function(input) {
+            return (
+              res
+                .map(function(rec) {
+                  return parseInt(rec.item_id);
+                })
+                .indexOf(parseInt(input)) > -1
+            );
+          }
+        }
+      ]);
       connection.end();
     }
   );
