@@ -13,7 +13,7 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   connection.query(
-    "select item_id, product_name, price from products",
+    "select item_id, product_name, price from products where stock_quantity > 0",
     function(err, res) {
       if (err) throw err;
       var output = table(
