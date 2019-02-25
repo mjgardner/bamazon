@@ -32,22 +32,77 @@ connection.connect(function(err) {
         }
       );
       console.log(output);
-      inquirer.prompt([
-        {
-          name: "item_id",
-          message: "Please enter a product ID you would like to buy:",
-          validate: function(input) {
-            return (
-              res
-                .map(function(rec) {
-                  return parseInt(rec.item_id);
-                })
-                .indexOf(parseInt(input)) > -1
-            );
+      inquirer
+        .prompt([
+          {
+            name: "itemId",
+            message: "Please enter a product ID you would like to buy:",
+            validate: function(input) {
+              if (
+                res
+                  .map(function(rec) {
+                    return parseInt(rec.item_id);
+                  })
+                  .indexOf(parseInt(input)) > -1
+              ) {
+                return true;
+              } else {
+                return "I don't have that product!";
+              }
+            }
           }
-        }
-      ]);
-      connection.end();
+        ])
+        .then(function(answers) {
+          connection.query(
+            "select item_id, stock_quantity, price from products where ?",
+            {
+              item_id: answers.itemId
+            },
+            function(err, itemRes) {
+              if (err) throw err;
+              promptHowMany(
+                parseInt(answers.itemId),
+                parseInt(itemRes[0].stock_quantity),
+                parseFloat(itemRes[0].price)
+              );
+            }
+          );
+        });
     }
   );
 });
+
+function promptHowMany(itemId, stockQuantity, price) {
+  inquirer
+    .prompt([
+      {
+        name: "quantity",
+        message: "How many?",
+        validate: function(input) {
+          if (parseInt(input) > stockQuantity) {
+            return "Insufficient quantity!";
+          } else {
+            return true;
+          }
+        }
+      }
+    ])
+    .then(function(answers) {
+      connection.query(
+        "update products set ? where item_id = " + itemId,
+        {
+          stock_quantity: stockQuantity - parseInt(answers.quantity)
+        },
+        function(err, updateRes) {
+          if (err) throw err;
+          if (updateRes.affectedRows === 1) {
+            console.log(
+              "Thank you for your purchase of $" +
+                (parseInt(answers.quantity) * price).toFixed(2)
+            );
+          }
+          connection.end();
+        }
+      );
+    });
+}
