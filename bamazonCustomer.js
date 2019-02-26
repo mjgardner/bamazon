@@ -89,10 +89,12 @@ function promptHowMany(itemId, stockQuantity, price) {
     ])
     .then(function(answers) {
       connection.query(
-        "update products set ? where item_id = " + itemId,
-        {
-          stock_quantity: stockQuantity - parseInt(answers.quantity)
-        },
+        "update products set stock_quantity = stock_quantity - ?, product_sales = product_sales + (price * ?) where item_id = ?",
+        [
+          parseInt(answers.quantity),
+          parseInt(answers.quantity),
+          itemId
+        ],
         function(err, updateRes) {
           if (err) throw err;
           if (updateRes.affectedRows === 1) {
