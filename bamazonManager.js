@@ -102,7 +102,7 @@ function outputTable(response) {
 function addInventory() {
   connection.query(
     "select item_id, product_name, stock_quantity from products",
-    function(err, res) {
+    function(err, selectRes) {
       if (err) throw err;
       inquirer
         .prompt([
@@ -110,7 +110,7 @@ function addInventory() {
             name: "item_id",
             message: "Select a product to add more inventory:",
             type: "list",
-            choices: res.map(function(record) {
+            choices: selectRes.map(function(record) {
               return { name: record.product_name, value: record.item_id };
             })
           }
@@ -130,10 +130,23 @@ function addInventory() {
                   parseInt(qtyAnswers.add_quantity),
                   parseInt(itemAnswers.item_id)
                 ],
-                function(err, res) {
-                  
-                });
-              switchboard();
+                function(err, updateRes) {
+                  if (err) throw err;
+                  connection.query(
+                    "select stock_quantity from products where ?",
+                    {
+                      item_id: itemAnswers.item_id
+                    },
+                    function(err, postUpdateRes) {
+                      if (err) throw err;
+                      console.log(
+                        "Now stocking " + postUpdateRes[0].stock_quantity
+                      );
+                      switchboard();
+                    }
+                  );
+                }
+              );
             });
         });
     }
