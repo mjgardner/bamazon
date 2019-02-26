@@ -154,39 +154,49 @@ function addInventory() {
 }
 
 function addProduct() {
-  inquirer
-    .prompt([
-      {
-        name: "product_name",
-        message: "Product name:"
-      },
-      {
-        name: "department_name",
-        message: "Department name:"
-      },
-      {
-        name: "price",
-        message: "Unit price:"
-      },
-      {
-        name: "stock_quantity",
-        message: "Units in stock:"
-      }
-    ])
-    .then(function(answers) {
-      connection.query(
-        "insert into products (product_name, department_name, price, stock_quantity) values (?, ?, ?, ?)",
-        [
-          answers.product_name,
-          answers.department_name,
-          answers.price,
-          answers.stock_quantity
-        ],
-        function(err, res) {
-          if (err) throw err;
-          console.log("Added product ID " + res.insertId);
-          switchboard();
-        }
-      );
-    });
+  connection.query(
+    "select department_id, department_name from departments",
+    function(err, res) {
+      if (err) throw err;
+      inquirer
+        .prompt([
+          {
+            name: "product_name",
+            message: "Product name:"
+          },
+          {
+            name: "department_id",
+            message: "Department:",
+            type: "list",
+            choices: res.map(function(rec) {
+              return { name: rec.department_name, value: rec.department_id };
+            })
+          },
+          {
+            name: "price",
+            message: "Unit price:"
+          },
+          {
+            name: "stock_quantity",
+            message: "Units in stock:"
+          }
+        ])
+        .then(function(answers) {
+          connection.query(
+            "insert into products (product_name, department_id, price, stock_quantity) values (?, ?, ?, ?)",
+            [
+              answers.product_name,
+              answers.department_id,
+              answers.price,
+              answers.stock_quantity
+            ],
+            function(err, res) {
+              if (err) throw err;
+              console.log("Added product ID " + res.insertId);
+              switchboard();
+            }
+          );
+        });
+    }
+  );
 }
