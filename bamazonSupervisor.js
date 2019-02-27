@@ -53,9 +53,13 @@ function viewSalesByDept() {
         return [
           rec.department_id,
           rec.department_name,
-          rec.over_head_costs,
-          rec.product_sales,
+          "$" + parseFloat(rec.over_head_costs).toFixed(2),
+          rec.product_sales
+            ? "$" + parseFloat(rec.product_sales).toFixed(2)
+            : "$0.00",
           rec.total_profit
+            ? "$" + parseFloat(rec.total_profit).toFixed(2)
+            : "$-" + parseFloat(rec.over_head_costs).toFixed(2)
         ];
       });
       resTable.unshift([
