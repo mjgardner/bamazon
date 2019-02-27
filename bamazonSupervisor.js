@@ -46,7 +46,7 @@ function switchboard() {
 
 function viewSalesByDept() {
   connection.query(
-    "select d.department_id, d.department_name, d.over_head_costs, sum(p.product_sales) as product_sales, sum(p.product_sales) - d.over_head_costs as total_profit from bamazon.departments d join bamazon.products p on p.department_id = d.department_id group by d.department_id",
+    "select d.department_id, d.department_name, d.over_head_costs, sum(p.product_sales) as product_sales, sum(p.product_sales) - d.over_head_costs as total_profit from bamazon.departments d left join bamazon.products p on p.department_id = d.department_id group by d.department_id",
     function(err, res) {
       if (err) throw err;
       var output = table(
