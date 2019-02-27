@@ -16,21 +16,23 @@ connection.connect(function(err) {
     "select item_id, product_name, price from products where stock_quantity > 0",
     function(err, res) {
       if (err) throw err;
-      var output = table(
-        res.map(function(rec) {
-          return [
-            rec.item_id,
-            rec.product_name,
-            "$" + parseFloat(rec.price).toFixed(2)
-          ];
-        }),
-        {
-          columns: {
-            0: { alignment: "right" },
-            2: { alignment: "right" }
-          }
+      var resTable = res.map(function(rec) {
+        return [
+          rec.item_id,
+          rec.product_name,
+          "$" + parseFloat(rec.price).toFixed(2)
+        ];
+      });
+      resTable.unshift(["Item ID", "Product Name", "Price"]);
+      var output = table(resTable, {
+        columns: {
+          0: { alignment: "right" },
+          2: { alignment: "right" }
+        },
+        drawHorizontalLine: function(index, size) {
+          return index === 0 || index === 1 || index === size;
         }
-      );
+      });
       console.log(output);
       inquirer
         .prompt([
@@ -89,10 +91,8 @@ function promptHowMany(itemId, stockQuantity, price) {
     ])
     .then(function(answers) {
       connection.query(
-        "update products set ? where item_id = " + itemId,
-        {
-          stock_quantity: stockQuantity - parseInt(answers.quantity)
-        },
+        "update products set stock_quantity = stock_quantity - ?, product_sales = product_sales + (price * ?) where item_id = ?",
+        [parseInt(answers.quantity), parseInt(answers.quantity), itemId],
         function(err, updateRes) {
           if (err) throw err;
           if (updateRes.affectedRows === 1) {
