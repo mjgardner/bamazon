@@ -75,23 +75,28 @@ function viewSalesByDept() {
 }
 
 function createDept() {
-  inquirer.prompt([
-    {
-      name: "department_name",
-      message: "Enter new department name:"
-    },
-    {
-      name: "over_head_costs",
-      message: "Enter overhead costs for this department:"
-    }
-  ]).then(function(answers) {
-    connection.query("insert into departments (department_name, over_head_costs) values (?, ?)", [
-      answers.department_name,
-      answers.over_head_costs
-    ], function(err, res) {
-      if (err) throw err;
-      console.log("Added " + res.affectedRows + " department as ID " + res.insertId);
-      switchboard();
+  inquirer
+    .prompt([
+      {
+        name: "department_name",
+        message: "Enter new department name:"
+      },
+      {
+        name: "over_head_costs",
+        message: "Enter overhead costs for this department:"
+      }
+    ])
+    .then(function(answers) {
+      connection.query(
+        "insert into departments (department_name, over_head_costs) values (?, ?)",
+        [answers.department_name, answers.over_head_costs],
+        function(err, res) {
+          if (err) throw err;
+          console.log(
+            "Added " + res.affectedRows + " department as ID " + res.insertId
+          );
+          switchboard();
+        }
+      );
     });
-  });
 }
