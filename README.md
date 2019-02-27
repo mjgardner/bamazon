@@ -99,6 +99,38 @@ Finally, the *Quit* menu item quits the application and returns you to your comm
 prompt.
 ![quit screenshot](assets/images/quit.png)
 
+## Running the supervisor application
+
+To run the manager application, do the following:
+
+```bash
+node bamazonSupervisor.js
+```
+
+A menu of choices appears:
+![supervisor menu screenshot](assets/images/supervisor_menu.png)
+
+Use the arrow keys to select items from the menu. After performing a function, the menu
+will reappear.
+
+### View Product Sales by Department
+
+Selecting *View Product Sales by Department* shows a list of all departments'
+performance, including overhead costs, product sales and total profit.
+![department product sales screenshot](assets/images/dept_product_sales.png)
+
+### Create New Department
+
+Selecting *Create New Department* will prompt you for a new department name
+and overhead costs for the new department.
+![create new department screenshot](assets/images/create_new_department.png)
+
+### Quit
+
+Finally, the *Quit* menu item quits the application and returns you to your command
+prompt.
+![quit screenshot](assets/images/quit_supervisor.png)
+
 ## Libraries used
 
 * [dotenv](https://www.npmjs.com/package/dotenv)
