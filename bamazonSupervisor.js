@@ -49,25 +49,33 @@ function viewSalesByDept() {
     "select d.department_id, d.department_name, d.over_head_costs, sum(p.product_sales) as product_sales, sum(p.product_sales) - d.over_head_costs as total_profit from bamazon.departments d left join bamazon.products p on p.department_id = d.department_id group by d.department_id",
     function(err, res) {
       if (err) throw err;
-      var output = table(
-        res.map(function(rec) {
-          return [
-            rec.department_id,
-            rec.department_name,
-            rec.over_head_costs,
-            rec.product_sales,
-            rec.total_profit
-          ];
-        }),
-        {
-          columns: {
-            0: { alignment: "right" },
-            2: { alignment: "right" },
-            3: { alignment: "right" },
-            4: { alignment: "right" }
-          }
+      var resTable = res.map(function(rec) {
+        return [
+          rec.department_id,
+          rec.department_name,
+          rec.over_head_costs,
+          rec.product_sales,
+          rec.total_profit
+        ];
+      });
+      resTable.unshift([
+        "Department ID",
+        "Department Name",
+        "Overhead Costs",
+        "Product Sales",
+        "Total Profit"
+      ]);
+      var output = table(resTable, {
+        columns: {
+          0: { alignment: "right" },
+          2: { alignment: "right" },
+          3: { alignment: "right" },
+          4: { alignment: "right" }
+        },
+        drawHorizontalLine: function(index, size) {
+          return index === 0 || index === 1 || index === size;
         }
-      );
+      });
       console.log(output);
       switchboard();
     }

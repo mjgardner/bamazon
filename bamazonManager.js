@@ -79,23 +79,25 @@ function viewLowInventory() {
 }
 
 function outputTable(response) {
-  var output = table(
-    response.map(function(rec) {
-      return [
-        rec.item_id,
-        rec.product_name,
-        "$" + parseFloat(rec.price).toFixed(2),
-        rec.stock_quantity
-      ];
-    }),
-    {
-      columns: {
-        0: { alignment: "right" },
-        2: { alignment: "right" },
-        3: { alignment: "right" }
-      }
+  var resTable = response.map(function(rec) {
+    return [
+      rec.item_id,
+      rec.product_name,
+      "$" + parseFloat(rec.price).toFixed(2),
+      rec.stock_quantity
+    ];
+  });
+  resTable.unshift(["Item ID", "Product Name", "Price", "Stock Quantity"]);
+  var output = table(resTable, {
+    columns: {
+      0: { alignment: "right" },
+      2: { alignment: "right" },
+      3: { alignment: "right" }
+    },
+    drawHorizontalLine: function(index, size) {
+      return index === 0 || index === 1 || index === size;
     }
-  );
+  });
   console.log(output);
 }
 
